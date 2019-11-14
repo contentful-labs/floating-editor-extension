@@ -2,8 +2,10 @@
 
 import React from 'react';
 import { render } from 'react-dom';
+import PropTypes from 'prop-types';
 import { css } from 'emotion';
 import tokens from '@contentful/forma-36-tokens';
+import { Tabs, Tab, TabPanel } from '@contentful/forma-36-react-components';
 import { SingleLineEditor } from '@contentful/field-editor-single-line';
 import { MultipleLineEditor } from '@contentful/field-editor-multiple-line';
 import { JsonEditor } from '@contentful/field-editor-json';
@@ -24,12 +26,18 @@ const styles = {
     width: '100%'
   }),
   internal: css({
-    padding: tokens.spacing3Xl
+    padding: tokens.spacing3Xl,
+    paddingTop: tokens.spacingM
+  }),
+  tabs: css({
+    marginBottom: tokens.spacingXl
   })
 };
 
-function renderEntryEditor(entrySdk) {
-  const renderables = entrySdk.contentType.fields.map(field => {
+function EntryEditor({ sdk, focusField }) {
+  const [selectedTab, setSelectedTab] = React.useState('focus');
+
+  const renderables = sdk.contentType.fields.map(field => {
     const result = {
       id: field.id,
       name: field.name
@@ -54,34 +62,64 @@ function renderEntryEditor(entrySdk) {
     return result;
   });
 
-  render(
+  const focusRendarable = renderables.find(item => item.id === focusField);
+
+  const renderField = item => {
+    const field = sdk.entry.fields[item.id];
+    const Component = item.component;
+    field.onSchemaErrorsChanged = () => {
+      return () => {};
+    };
+    field.setInvalid = () => {};
+    return (
+      <FieldComponent key={item.id} item={item}>
+        <Component field={field} isInitiallyDisabled={false} />
+      </FieldComponent>
+    );
+  };
+
+  return (
     <div className={styles.root}>
       <div className={styles.internal}>
-        {renderables.map(item => {
-          const field = entrySdk.entry.fields[item.id];
-          const Component = item.component;
-          field.onSchemaErrorsChanged = () => {
-            return () => {};
-          };
-          field.setInvalid = () => {};
-          return (
-            <FieldComponent key={item.id} item={item}>
-              <Component field={field} isInitiallyDisabled={false} />
-            </FieldComponent>
-          );
-        })}
+        <Tabs className={styles.tabs}>
+          <Tab
+            id="focus"
+            selected={selectedTab === 'focus'}
+            onSelect={id => {
+              setSelectedTab(id);
+            }}>
+            Focus
+          </Tab>
+          <Tab
+            id="all"
+            selected={selectedTab === 'all'}
+            onSelect={id => {
+              setSelectedTab(id);
+            }}>
+            All fields
+          </Tab>
+        </Tabs>
+        {selectedTab === 'all' && (
+          <TabPanel id="all">{renderables.map(item => renderField(item))}</TabPanel>
+        )}
+        {selectedTab === 'focus' && <TabPanel id="focus">{renderField(focusRendarable)}</TabPanel>}
       </div>
-    </div>,
-    document.getElementById('root')
+    </div>
   );
 }
 
+EntryEditor.propTypes = {
+  sdk: PropTypes.any.isRequired,
+  focusField: PropTypes.string
+};
+
 externalInit(
   sdk => {
-    renderEntryEditor(sdk);
+    render(<EntryEditor sdk={sdk} focusField="body" />, document.getElementById('root'));
   },
   {
     spaceId: process.env.SPACE,
+    environmentId: 'master',
     entryId: '1waQCQS7fLWGTr74WpOKZb'
   }
 );
