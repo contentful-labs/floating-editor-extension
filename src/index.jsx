@@ -1,5 +1,7 @@
 import React from 'react';
 import { render } from 'react-dom';
+import { css } from 'emotion';
+import tokens from '@contentful/forma-36-tokens';
 import { init, locations } from 'contentful-ui-extensions-sdk';
 import { SingleLineEditor } from '@contentful/field-editor-single-line';
 import { MultipleLineEditor } from '@contentful/field-editor-multiple-line';
@@ -11,6 +13,18 @@ import '@contentful/forma-36-react-components/dist/styles.css';
 import 'codemirror/lib/codemirror.css';
 import 'codemirror/mode/javascript/javascript';
 import './index.css';
+import { FieldComponent } from './FieldComponent';
+
+const styles = {
+  root: css({
+    minWidth: '400px',
+    maxWidth: '1000px',
+    width: '100%'
+  }),
+  internal: css({
+    padding: tokens.spacing3Xl
+  })
+};
 
 function renderEntryEditor(entrySdk) {
   const renderables = entrySdk.contentType.fields.map(field => {
@@ -28,7 +42,7 @@ function renderEntryEditor(entrySdk) {
       result.component = NumberEditor;
     } else if (field.type === 'Boolean') {
       result.component = BooleanEditor;
-    } else if (field.type === 'Symbols') {
+    } else if (field.type === 'Array') {
       result.component = TagsEditor;
     } else {
       result.component = function NotExist() {
@@ -39,19 +53,19 @@ function renderEntryEditor(entrySdk) {
   });
 
   render(
-    <div style={{ minHeight: 500, width: 1000, minWidth: 1000 }}>
-      <div style={{ padding: 100 }}>
+    <div className={styles.root}>
+      <div className={styles.internal}>
         {renderables.map(item => {
           const field = entrySdk.entry.fields[item.id];
           const Component = item.component;
           field.onSchemaErrorsChanged = () => {
             return () => {};
           };
+          field.setInvalid = () => {};
           return (
-            <div key={item.id} className="field">
-              <div className="field-name">{item.name}</div>
+            <FieldComponent key={item.id} item={item}>
               <Component field={field} />
-            </div>
+            </FieldComponent>
           );
         })}
       </div>
