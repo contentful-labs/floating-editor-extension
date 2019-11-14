@@ -10,6 +10,10 @@
     "help": "contentful-extension-scripts help"
   },
   "dependencies": {
+    "dotenv": "8.2.0",
+    "contentful": "7.10.0",
+    "contentful-management": "5.11.3",
+    "mitt": "1.2.0",
     "@contentful/contentful-extension-scripts": "0.14.0",
     "@contentful/field-editor-shared": "0.3.0",
     "@contentful/field-editor-boolean": "0.2.0",

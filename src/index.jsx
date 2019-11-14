@@ -1,8 +1,9 @@
+/* global process */
+
 import React from 'react';
 import { render } from 'react-dom';
 import { css } from 'emotion';
 import tokens from '@contentful/forma-36-tokens';
-import { init, locations } from 'contentful-ui-extensions-sdk';
 import { SingleLineEditor } from '@contentful/field-editor-single-line';
 import { MultipleLineEditor } from '@contentful/field-editor-multiple-line';
 import { JsonEditor } from '@contentful/field-editor-json';
@@ -14,6 +15,7 @@ import 'codemirror/lib/codemirror.css';
 import 'codemirror/mode/javascript/javascript';
 import './index.css';
 import { FieldComponent } from './FieldComponent';
+import { externalInit } from './sdk/createFakeAPI';
 
 const styles = {
   root: css({
@@ -64,7 +66,7 @@ function renderEntryEditor(entrySdk) {
           field.setInvalid = () => {};
           return (
             <FieldComponent key={item.id} item={item}>
-              <Component field={field} />
+              <Component field={field} isInitiallyDisabled={false} />
             </FieldComponent>
           );
         })}
@@ -74,11 +76,15 @@ function renderEntryEditor(entrySdk) {
   );
 }
 
-init(sdk => {
-  if (sdk.location.is(locations.LOCATION_ENTRY_EDITOR)) {
+externalInit(
+  sdk => {
     renderEntryEditor(sdk);
+  },
+  {
+    spaceId: process.env.SPACE,
+    entryId: '1waQCQS7fLWGTr74WpOKZb'
   }
-});
+);
 
 /**
  * By default, iframe of the extension is fully reloaded on every save of a source file.
