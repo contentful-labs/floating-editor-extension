@@ -1,0 +1,20 @@
+{
+  "id": "full-editor-example",
+  "name": "Floating entry editor",
+  "srcdoc": "./build/index.html",
+  "fieldTypes": [
+    "Symbol",
+    "Symbols",
+    "Text",
+    "Integer",
+    "Number",
+    "Boolean",
+    "Date",
+    "Location",
+    "Object",
+    "Entry",
+    "Entries",
+    "Asset",
+    "Assets"
+  ]
+}

@@ -1,0 +1,23 @@
+html,
+body,
+div {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  font-size: 100%;
+  font: inherit;
+  vertical-align: baseline;
+  font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Helvetica, Arial, sans-serif,
+    Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol;
+}
+
+.field {
+  padding: 10px;
+  background: white;
+  margin-bottom: 50px;
+}
+
+.field-name {
+  padding-bottom: 20px;
+  background-color: red;
+}
